@@ -63,7 +63,7 @@
 
 #include <iostream>
 extern CWallet* pwalletMain;
-extern int64_t nLastCoinStakeSearchInterval;
+//extern int64_t nLastCoinStakeSearchInterval;
 extern unsigned int nStakeTargetSpacing;
 double GetPoSKernelPS();
 
@@ -380,7 +380,11 @@ void BitcoinGUI::createMenuBar()
     appMenuBar = new QMenuBar();
 #else
     // Get the main window's menu bar on other platforms
-    appMenuBar = menuBar();
+    // workaround for unity's global menu
+    if (qgetenv("QT_QPA_PLATFORMTHEME") == "appmenu-qt5")
+        appMenuBar = menuBar();
+    else
+        appMenuBar = new QMenuBar();
 #endif
 
     // Configure the menus
