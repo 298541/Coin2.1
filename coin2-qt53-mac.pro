@@ -22,7 +22,7 @@ QT += core gui network
 #QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.4
 #QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.4/.libs
 
-# manually change -mmacosx-version-min=10.9 to -mmacosx-version-min=10.9 in Makefile later
+# manually change -mmacosx-version-min=10.7 to -mmacosx-version-min=10.9 in Makefile later
 
 OBJECTS_DIR = build
 MOC_DIR = build
