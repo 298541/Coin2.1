@@ -4283,6 +4283,16 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     if (hash > hashTarget && pblock->IsProofOfWork())
         return error("BitcoinMiner : proof-of-work not meeting target");
 
+    // Get prev block index
+    map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
+    if (mi == mapBlockIndex.end())
+        return error("BitcoinMiner() : prev block not found");
+    CBlockIndex* pindexPrev = (*mi).second;
+
+    // Check proof-of-work or proof-of-stake
+    if (pblock->nBits != GetNextTargetRequired(pindexPrev, pblock->IsProofOfStake()))
+        return error("BitcoinMiner() : incorrect %s", pblock->IsProofOfWork() ? "proof-of-work" : "proof-of-stake");
+
     //// debug print
     printf("BitcoinMiner:\n");
     printf("new block found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
