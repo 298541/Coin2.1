@@ -1110,7 +1110,7 @@ int GetNumBlocksOfPeers()
 
 bool IsInitialBlockDownload()
 {
-    if (pindexBest == NULL || nBestHeight < Checkpoints::GetTotalBlocksEstimate())
+    if (pindexBest == NULL)
         return true;
     static int64 nLastUpdate;
     static CBlockIndex* pindexLastBest;
@@ -1119,8 +1119,8 @@ bool IsInitialBlockDownload()
         pindexLastBest = pindexBest;
         nLastUpdate = GetTime();
     }
-    return (GetTime() - nLastUpdate < 10 &&
-            pindexBest->GetBlockTime() < GetTime() - 24 * 60 * 60);
+    return (GetTime() - nLastUpdate < 10 && pindexBest->GetBlockTime() < GetTime() - 2.4 * 60 * 60) ||
+             nBestHeight < GetNumBlocksOfPeers() - 2.4 * 60;
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
@@ -3150,7 +3150,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
                 // In case we are on a very long side-chain, it is possible that we already have
                 // the last block in an inv bundle sent in response to getblocks. Try to detect
                 // this situation and push another getblocks to continue.
-                pfrom->PushGetBlocks(mapBlockIndex[inv.hash], uint256(0));
+                pfrom->PushGetBlocks(pindexBest, uint256(0));
                 if (fDebug)
                     printf("force request: %s\n", inv.ToString().c_str());
             }
