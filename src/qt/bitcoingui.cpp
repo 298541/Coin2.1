@@ -411,6 +411,7 @@ void BitcoinGUI::createMenuBar()
 
 	// QString ss("QMenuBar::item { background-color: #ceffee; color: black }"); 
     // appMenuBar->setStyleSheet(ss);
+    setMenuBar(appMenuBar);
 }
 
 void BitcoinGUI::createToolBars()
