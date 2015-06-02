@@ -6,6 +6,10 @@
 # 2. using qt5
 # 3. USE_UPNP=-
 #
+# To compile:
+#   qmake "USE_QRCODE=1" "USE_UPNP=-" "USE_IPV6=1" coin2-qt53-win.pro
+#   mingw32-make -j 2 -f Makefile.Release
+
 
 TEMPLATE = app
 TARGET = coin2.1-qt
