@@ -38,15 +38,15 @@ uint256 hashGenesisBlock = hashGenesisBlockOfficial;
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20);
 static CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 
-static CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 20);
-static CBigNum bnProofOfStakeLimitTestNet(~uint256(0) >> 20);
+static CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
+static CBigNum bnProofOfStakeLimitTestNet(~uint256(0) >> 16);
 
 unsigned int nStakeMinAge = 60 * 60 * 8 * 1;	// minimum age for coin age: 8 Hours
 unsigned int nStakeMaxAge = 60 * 60 * 24 * 100;    //60 * 60 * 24 * 100;	// stake age of full weight: 100d
 unsigned int nStakeTargetSpacing = 60;			// 60 sec block spacing
 
 int64 nChainStartTime = 1401695545;
-int nCoinbaseMaturity = 30;
+int nCoinbaseMaturity = 50;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 CBigNum bnBestChainTrust = 0;
@@ -780,7 +780,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return max(0, (nCoinbaseMaturity+20) - GetDepthInMainChain());
+    return max(0, nCoinbaseMaturity - GetDepthInMainChain());
 }
 
 
@@ -1830,11 +1830,9 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     bnBestChainTrust = pindexNew->bnChainTrust;
     nTimeBestReceived = GetTime();
     nTransactionsUpdated++;
-    printf("SetBestChain: new best=%s  height=%d  trust=%s  date=%s\n",
+    printf("SetBestChain: new best=%s  height=%d  trust=%s  date=%s Stake checkpoint: %x\n",
       hashBestChain.ToString().c_str(), nBestHeight, bnBestChainTrust.ToString().c_str(),
-      DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str());
-
-	printf("Stake checkpoint: %x\n", pindexBest->nStakeModifierChecksum);
+      DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str(), pindexBest->nStakeModifierChecksum);
 
     // Check the version of the last 100 blocks to see if we need to upgrade:
     if (!fIsInitialDownload)
@@ -2325,8 +2323,6 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
         mapOrphanBlocksByPrev.erase(hashPrev);
     }
 
-    printf("ProcessBlock: ACCEPTED\n");
-
     // ppcoin: if responsible for sync-checkpoint send it
     if (pfrom && !CSyncCheckpoint::strMasterPrivKey.empty())
         Checkpoints::SendSyncCheckpoint(Checkpoints::AutoSelectSyncCheckpoint());
@@ -2531,7 +2527,7 @@ bool LoadBlockIndex(bool fAllowNew)
         nStakeMaxAge = 60 * 60; // test net max age is 60 min
         //nModifierInterval = 10 * 60; // test modifier interval is 10 minutes
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
-        nStakeTargetSpacing = 3 * 60; // test block spacing is 3 minutes
+        nStakeTargetSpacing = 1 * 60; // test block spacing is 1 minutes
     }
 
     //
@@ -2572,7 +2568,7 @@ bool LoadBlockIndex(bool fAllowNew)
 
 
 
-/*        if (false && (block.GetHash() != hashGenesisBlock)) {
+        if (true && (block.GetHash() != (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet))) {
          printf("CREATE GENESIS BLOCK CODE");
 
          // This will figure out a valid hash and Nonce if you're
@@ -2594,7 +2590,7 @@ bool LoadBlockIndex(bool fAllowNew)
                     }
                 }
          }
-*/
+
         //// debug print
         block.print();
         printf("block.GetHash() == %s\n", block.GetHash().ToString().c_str());
@@ -3395,7 +3391,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CBlock block;
         vRecv >> block;
 
-        printf("received block %s\n", block.GetHash().ToString().substr(0,20).c_str());
+        // printf("received block %s\n", block.GetHash().ToString().substr(0,20).c_str());
         // block.print();
 
         CInv inv(MSG_BLOCK, block.GetHash());
@@ -4346,7 +4342,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
     {
         if (fShutdown)
             return;
-        while (vNodes.empty() || IsInitialBlockDownload())
+        while ((!fTestNet && vNodes.empty()) || IsInitialBlockDownload())
         {
             Sleep(1000);
             if (fShutdown)

@@ -24,8 +24,15 @@ namespace Checkpoints
     //
     static MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
-        (     0, hashGenesisBlockOfficial )
-		;
+        (     0,        hashGenesisBlockOfficial )
+        (     100000,   uint256("0xf78a60bb29147353a6b36dcf4b359e16b444c33bc16bd936a4d160b99ac48351"))
+        (     200000,   uint256("0x013f40150a537abbc37d83388fb2d099eb2ba2b38c4ff2b1a0d32a6a92b50fb0"))
+        (     300000,   uint256("0x4f31436ee6e7abaab2c53f0442e85be735a94be0e00752880d6292e00b5e62e8"))
+        (     400000,   uint256("0x68320f3e41210871c5ed8ff26d7192dc126e7e283e32c57d2c6014680485dc65"))
+        (     500000,   uint256("0x0a2cc9442bf647b06e62c79325048aebbb9ac96cb56a0a5d1fce651ef97cf31b"))
+        (     600000,   uint256("0x3660a8464fd2372d6f579702b52b64f35c83372f0f8718a30b7eb509c8132476"))
+        (     700000,   uint256("0x26ac67c6783bb62b9a36b9f251e95b3a3dc0b28a0acc8ece27882f4bdff928b6"))
+        ;
 
     static MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
@@ -194,7 +201,7 @@ namespace Checkpoints
         // Select the last proof-of-work block
         const CBlockIndex *pindex = GetLastBlockIndex(pindexBest, false);
         // Search forward for a block within max span and maturity window
-        while (pindex->pnext && (pindex->GetBlockTime() + CHECKPOINT_MAX_SPAN <= pindexBest->GetBlockTime() || pindex->nHeight + std::min(6, nCoinbaseMaturity - 20) <= pindexBest->nHeight))
+        while (pindex->pnext && (pindex->GetBlockTime() + nStakeMinAge <= pindexBest->GetBlockTime() || pindex->nHeight + nCoinbaseMaturity <= pindexBest->nHeight))
             pindex = pindex->pnext;
         return pindex->GetBlockHash();
     }
@@ -202,7 +209,10 @@ namespace Checkpoints
     // Check against synchronized checkpoint
     bool CheckSync(const uint256& hashBlock, const CBlockIndex* pindexPrev)
     {
-        if (fTestNet) return true; // Testnet has no checkpoints
+        if (fTestNet) return true; // Testnet has no sync checkpoints
+        // there were no sync checkpoints on mainnet yet
+        if (hashSyncCheckpoint == hashGenesisBlock) return true;
+
         int nHeight = pindexPrev->nHeight + 1;
 
         LOCK(cs_hashSyncCheckpoint);
