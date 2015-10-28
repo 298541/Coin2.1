@@ -847,7 +847,7 @@ bool CTxDB::LoadBlockIndexGuts()
             pindexNew->nBits          = diskindex.nBits;
             pindexNew->nNonce         = diskindex.nNonce;
 
-            if(nBlock % 1000 == 0) printf("Loading index, loaded %d blocks\n", nBlock);
+            if(nBlock % 10000 == 0) printf("Loading index, loaded %d blocks\n", nBlock);
             nBlock++;
 
             // Watch for genesis block
