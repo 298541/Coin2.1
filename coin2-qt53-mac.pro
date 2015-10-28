@@ -1,3 +1,6 @@
+# to package app into dmg:
+# python2.7 contrib/macdeploy/macdeployqtplus Coin2.1-Qt.app -dmg
+
 TEMPLATE = app
 TARGET = coin2.1-qt
 VERSION = 2.1.3
