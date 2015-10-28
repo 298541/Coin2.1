@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>715</width>
-    <height>447</height>
+    <height>496</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -230,34 +230,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="coin2">
-       <property name="minimumSize">
-        <size>
-         <width>256</width>
-         <height>256</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Panel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <property name="margin">
-        <number>-2</number>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
