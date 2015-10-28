@@ -802,6 +802,7 @@ bool CTxDB::LoadBlockIndexGuts()
 
     // Load mapBlockIndex
     unsigned int fFlags = DB_SET_RANGE;
+    int nBlock = 0;
     loop()
     {
         // Read next record
@@ -827,7 +828,7 @@ bool CTxDB::LoadBlockIndexGuts()
             ssValue >> diskindex;
 
             // Construct block index object
-            CBlockIndex* pindexNew = InsertBlockIndex(diskindex.GetBlockHash());
+            CBlockIndex* pindexNew = InsertBlockIndex(diskindex.hash);
             pindexNew->pprev          = InsertBlockIndex(diskindex.hashPrev);
             pindexNew->pnext          = InsertBlockIndex(diskindex.hashNext);
             pindexNew->nFile          = diskindex.nFile;
@@ -846,8 +847,11 @@ bool CTxDB::LoadBlockIndexGuts()
             pindexNew->nBits          = diskindex.nBits;
             pindexNew->nNonce         = diskindex.nNonce;
 
+            if(nBlock % 1000 == 0) printf("Loading index, loaded %d blocks\n", nBlock);
+            nBlock++;
+
             // Watch for genesis block
-            if (pindexGenesisBlock == NULL && diskindex.GetBlockHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet))
+            if (pindexGenesisBlock == NULL && diskindex.hash == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet))
                 pindexGenesisBlock = pindexNew;
 
             if (!pindexNew->CheckIndex())

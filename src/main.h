@@ -1353,17 +1353,20 @@ class CDiskBlockIndex : public CBlockIndex
 public:
     uint256 hashPrev;
     uint256 hashNext;
+    uint256 hash;
 
     CDiskBlockIndex()
     {
         hashPrev = 0;
         hashNext = 0;
+        hash = 0;
     }
 
     explicit CDiskBlockIndex(CBlockIndex* pindex) : CBlockIndex(*pindex)
     {
         hashPrev = (pprev ? pprev->GetBlockHash() : 0);
         hashNext = (pnext ? pnext->GetBlockHash() : 0);
+        hash = pindex->GetBlockHash();
     }
 
     IMPLEMENT_SERIALIZE
@@ -1399,6 +1402,8 @@ public:
         READWRITE(nTime);
         READWRITE(nBits);
         READWRITE(nNonce);
+
+        READWRITE(hash);
     )
 
     uint256 GetBlockHash() const
@@ -1410,7 +1415,8 @@ public:
         block.nTime           = nTime;
         block.nBits           = nBits;
         block.nNonce          = nNonce;
-        return block.GetHash();
+        uint256 hash = block.GetHash();
+        return hash;
     }
 
 
