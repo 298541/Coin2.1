@@ -15,8 +15,6 @@ class SignVerifyMessageDialog;
 class AccessNxtInsideDialog;
 class Notificator;
 class RPCConsole;
-class ChatWindow;
-class MarketStats;
 class AccessNxtInsideDialog;
 
 QT_BEGIN_NAMESPACE
@@ -70,8 +68,6 @@ private:
     SendCoinsDialog *sendCoinsPage;
     SignVerifyMessageDialog *signVerifyMessageDialog;
     AccessNxtInsideDialog *accessNxtInsideDialog;
-    ChatWindow *chatWindow;
-    MarketStats *marketStats;
 
 
     QLabel *labelEncryptionIcon;
@@ -101,10 +97,6 @@ private:
     QAction *changePassphraseAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
-    /** Chat actions */
-    QAction *chatAction;
-    QAction *marketAction;
-
 
 
     QSystemTrayIcon *trayIcon;
@@ -158,10 +150,6 @@ private slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage();
-    /** Switch to the IRC page */
-    void gotoChatPage();
-    /** Switch to Market Data */
-    void gotoMarketStats();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

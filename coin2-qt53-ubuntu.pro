@@ -195,11 +195,9 @@ HEADERS += src/qt/bitcoingui.h \
     src/allocators.h \
     src/ui_interface.h \
     src/qt/rpcconsole.h \
-	src/qt/chatwindow.h \
 	src/qt/serveur.h \
     src/version.h \
     src/netbase.h \
-	src/qt/marketstats.h \
     src/clientversion.h \
 	src/qt/accessnxtinsidedialog.h \
 	src/qt/qcustomplot.h  
@@ -263,9 +261,7 @@ SOURCES += src/qt/bitcoin.cpp \
     src/qt/notificator.cpp \
     src/qt/qtipcserver.cpp \
     src/qt/rpcconsole.cpp \
-	src/qt/chatwindow.cpp \
 	src/qt/serveur.cpp \
-	src/qt/marketstats.cpp \
 	src/qt/qcustomplot.cpp \
     src/noui.cpp \
     src/kernel.cpp \
@@ -289,8 +285,6 @@ FORMS += \
     src/qt/forms/sendcoinsentry.ui \
     src/qt/forms/askpassphrasedialog.ui \
     src/qt/forms/rpcconsole.ui \
-	src/qt/forms/chatwindow.ui \
-	src/qt/forms/marketstats.ui \
 	src/qt/forms/accessnxtinsidedialog.ui \
     src/qt/forms/optionsdialog.ui
 

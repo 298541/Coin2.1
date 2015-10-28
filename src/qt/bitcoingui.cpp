@@ -14,14 +14,12 @@
 #include "aboutdialog.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
-#include "chatwindow.h"
 #include "editaddressdialog.h"
 #include "optionsmodel.h"
 #include "transactiondescdialog.h"
 #include "addresstablemodel.h"
 #include "transactionview.h"
 #include "overviewpage.h"
-#include "marketstats.h"
 #include "bitcoinunits.h"
 #include "guiconstants.h"
 #include "askpassphrasedialog.h"
@@ -118,11 +116,6 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
 
     sendCoinsPage = new SendCoinsDialog(this);
 
-    chatWindow = new ChatWindow(this);
-
-    marketStats = new MarketStats(this);
-
-
     signVerifyMessageDialog = new SignVerifyMessageDialog(this);
     accessNxtInsideDialog = new AccessNxtInsideDialog(this);
 
@@ -131,9 +124,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     centralWidget->addWidget(transactionsPage);
     centralWidget->addWidget(addressBookPage);
     centralWidget->addWidget(receiveCoinsPage);
-    centralWidget->addWidget(chatWindow);
     centralWidget->addWidget(sendCoinsPage);
-    centralWidget->addWidget(marketStats);
 
     setCentralWidget(centralWidget);
 
@@ -305,18 +296,6 @@ void BitcoinGUI::createActions()
     addressBookAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     tabGroup->addAction(addressBookAction);
 
-    chatAction = new QAction(QIcon(":/icons/face2"), tr("&Social"), this);
-    chatAction->setToolTip(tr("View Social Links"));
-    chatAction->setCheckable(true);
-    tabGroup->addAction(chatAction);
-
-    marketAction = new QAction(QIcon(":/icons/market"), tr("&Market Analysis"), this);
-    marketAction->setToolTip(tr("Market"));
-    marketAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
-    marketAction->setCheckable(true);
-    tabGroup->addAction(marketAction);
-
-
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
     connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -326,8 +305,6 @@ void BitcoinGUI::createActions()
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
-    connect(marketAction, SIGNAL(triggered()), this, SLOT(gotoMarketStats()));
     connect(addressBookAction, SIGNAL(triggered()), this, SLOT(gotoAddressBookPage()));
 
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
@@ -424,8 +401,6 @@ void BitcoinGUI::createToolBars()
     toolbar->addAction(receiveCoinsAction);
     toolbar->addAction(historyAction);
     toolbar->addAction(addressBookAction);
-    toolbar->addAction(chatAction);
-
 
 
     QToolBar *toolbar2 = addToolBar(tr("Actions toolbar"));
@@ -444,8 +419,6 @@ void BitcoinGUI::createToolBars()
     toolbar->addAction(receiveCoinsAction);
     toolbar->addAction(historyAction);
     toolbar->addAction(addressBookAction);
-    toolbar->addAction(chatAction);
-    toolbar->addAction(marketAction);
     toolbar->addAction(exportAction);
     QWidget* spacer = new QWidget();
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -492,8 +465,6 @@ void BitcoinGUI::setClientModel(ClientModel *clientModel)
         connect(clientModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
 
         rpcConsole->setClientModel(clientModel);
-        chatWindow->setModel(clientModel);
-        marketStats->setModel(clientModel);
 
         addressBookPage->setOptionsModel(clientModel->getOptionsModel());
         receiveCoinsPage->setOptionsModel(clientModel->getOptionsModel());
@@ -860,19 +831,6 @@ void BitcoinGUI::gotoSendCoinsPage()
     disconnect(exportAction, SIGNAL(triggered()), 0, 0);
 }
 
-void BitcoinGUI::gotoChatPage()
-{
-    chatAction->setChecked(true);
-    centralWidget->setCurrentWidget(chatWindow);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-    connect(exportAction, SIGNAL(triggered()), 0, 0);
-    exportAction->setVisible(true);
-    exportAction->setEnabled(false);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-
-}
-
-
 void BitcoinGUI::gotoSignMessageTab(QString addr)
 {
     // call show() in showTab_SM()
@@ -1086,19 +1044,4 @@ void BitcoinGUI::updateStakingIcon()
         else
             labelStakingIcon->setToolTip(tr("Not staking"));
     }
-}
-
-void BitcoinGUI::gotoMarketStats()
-{
-    marketAction->setChecked(true);
-    centralWidget->setCurrentWidget(marketStats);
-    exportAction->setEnabled(false);
-    exportAction->setVisible(true);
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-    connect(exportAction, SIGNAL(triggered()), this, 0);
-    exportAction->setVisible(false);
-
-    disconnect(exportAction, SIGNAL(triggered()), 0, 0);
-    exportAction->setVisible(true);
-
 }
