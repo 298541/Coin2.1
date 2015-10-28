@@ -13,7 +13,7 @@
 
 TEMPLATE = app
 TARGET = coin2.1-qt
-VERSION = 2.1.2
+VERSION = 2.1.3
 INCLUDEPATH += src src/json src/qt C:/deps/miniupnpc/ C:/deps/bdb4.8.30.NC/build_unix/ C:/deps/openssl-1.0.1l/include C:/deps/boost_1_55_0 build
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 CONFIG += no_include_pwd static
