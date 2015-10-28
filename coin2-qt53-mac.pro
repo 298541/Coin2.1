@@ -1,28 +1,14 @@
 TEMPLATE = app
 TARGET = coin2.1-qt
 VERSION = 2.1.2
-INCLUDEPATH += src src/json src/qt C:/NC2/libs53/miniupnpc-1.8/ C:/NC2/libs53/db-4.8.30.NC/build_unix/ C:/NC2/libs53/openssl-1.0.1g/include/openssl C:/NC2/libs53/boost_1_55_0/ build
+INCLUDEPATH += src src/json src/qt
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 CONFIG += no_include_pwd static thread
 QT += core gui network
-#LIBS += -LC:/deps/boost_1_55_0/stage/lib/ -lboost_system-mgw49-mt-s-1_55 -lboost_filesystem-mgw49-mt-s-1_55 -lboost_program_options-mgw49-mt-s-1_55 -lboost_thread-mgw49-mt-s-1_55 -lboost_chrono-mgw49-mt-s-1_55 -LC:/deps/openssl-1.0.1i -lssl -lcrypto -LC:/deps/db-4.8.30.NC/build_unix/.libs -ldb_cxx-4.8 -LC:/deps/qrencode-3.4.4/.libs #-LC:/NC2/libs53/miniupnpc-1.8/ -lminiupnpc
 
-# UNCOMMENT THIS SECTION TO BUILD ON WINDOWS
-# Change paths if needed, these use the foocoin/deps.git repository locations
-
-#BOOST_LIB_SUFFIX=-mgw49-mt-s-1_55
-#BOOST_INCLUDE_PATH=C:/deps/boost_1_55_0
-#BOOST_LIB_PATH=C:/deps/boost_1_55_0/stage/lib
-#BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
-#BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
-#OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1i/include
-#OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1i
-#MINIUPNPC_INCLUDE_PATH=C:/deps/
-#MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
-#QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.4
-#QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.4/.libs
-
-# manually change -mmacosx-version-min=10.7 to -mmacosx-version-min=10.9 in Makefile later
+# use your SDK here
+QMAKE_MAC_SDK = macosx10.11
+# also manually change -mmacosx-version-min=10.7 to -mmacosx-version-min=10.9 in Makefile later
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -35,27 +21,9 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 
-# use: qmake "RELEASE=1"
-contains(RELEASE, 1) {
-    # Mac: compile for maximum compatibility (10.5, 32-bit)
-    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-
-    !windows:!macx {
-        # Linux: static link
-        LIBS += -Wl,-Bstatic
-    }
-}
-
-!win32 {
 # for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
 QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
-# We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
-# This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
-}
-# for extra security on Windows: enable ASLR and DEP via GCC linker flags
-win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat -static
-
 
 # use: qmake "USE_QRCODE=1"
 # libqrencode (http://fukuchi.org/works/qrencode/index.en.html) must be installed for support
@@ -79,7 +47,6 @@ contains(USE_UPNP, -) {
     DEFINES += USE_UPNP=$$USE_UPNP STATICLIB
     INCLUDEPATH += $$MINIUPNPC_INCLUDE_PATH
     LIBS += $$join(MINIUPNPC_LIB_PATH,,-L,) -lminiupnpc
-    win32:LIBS += -liphlpapi
 }
 
 
@@ -318,8 +285,7 @@ CODECFORTR = UTF-8
 TRANSLATIONS = $$files(src/qt/locale/bitcoin_*.ts)
 
 isEmpty(QMAKE_LRELEASE) {
-    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
-    else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
+    macx:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
 }
 isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
 # automatically build translations, so they can be included in resource file
@@ -337,7 +303,6 @@ OTHER_FILES += \
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
     macx:BOOST_LIB_SUFFIX = -mt
-    windows:BOOST_LIB_SUFFIX = -mgw48-mt-1_55
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
@@ -357,34 +322,19 @@ isEmpty(BDB_INCLUDE_PATH) {
 }
 
 isEmpty(BOOST_LIB_PATH) {
-    macx:BOOST_LIB_PATH = /usr/local/Cellar/boost/1.57.0/lib/ #/opt/local/lib
+    macx:BOOST_LIB_PATH = /usr/local/Cellar/boost/1.58.0/lib/ #/opt/local/lib
 }
 
 isEmpty(BOOST_INCLUDE_PATH) {
-    macx:BOOST_INCLUDE_PATH = /usr/local/Cellar/boost/1.57.0/include/ #/opt/local/include
-	windows:
+    macx:BOOST_INCLUDE_PATH = /usr/local/Cellar/boost/1.58.0/include/ #/opt/local/include
 }
 
-
-
-
-windows:DEFINES += WIN32 WIN32_LEAN_AND_MEAN
-windows:RC_FILE = src/qt/res/bitcoin-qt.rc
-
-windows:!contains(MINGW_THREAD_BUGFIX, 0) {
-    # At least qmake's win32-g++-cross profile is missing the -lmingwthrd
-    # thread-safety flag. GCC has -mthreads to enable this, but it doesn't
-    # work with static linking. -lmingwthrd must come BEFORE -lmingw, so
-    # it is prepended to QMAKE_LIBS_QT_ENTRY.
-    # It can be turned off with MINGW_THREAD_BUGFIX=0, just in case it causes
-    # any problems on some untested qmake profile now or in the future.
-    DEFINES += _MT
-    QMAKE_LIBS_QT_ENTRY = -lmingwthrd $$QMAKE_LIBS_QT_ENTRY
+isEmpty(OPENSSL_LIB_PATH) {
+    macx:OPENSSL_LIB_PATH = /usr/local/opt/openssl/lib
 }
 
-!windows:!macx {
-    DEFINES += LINUX
-    LIBS += -lrt
+isEmpty(OPENSSL_INCLUDE_PATH) {
+    macx:OPENSSL_INCLUDE_PATH = /usr/local/opt/openssl/include
 }
 
 macx:HEADERS += src/qt/macdockiconhandler.h src/qt/macnotificationhandler.h
@@ -403,16 +353,7 @@ INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 # -lgdi32 has to happen after -lcrypto (see  #681)
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-#windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 macx:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-
-contains(RELEASE, 1) {
-    !windows:!macx {
-        # Linux: turn dynamic linking back on for c/c++ runtime libraries
-        LIBS += -Wl,-Bdynamic
-    }
-}
 
 system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
