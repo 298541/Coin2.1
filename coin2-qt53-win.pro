@@ -4,11 +4,10 @@
 # Slight differences with above guide:
 # 1. using boost 1.55, make sure you have the right lib or change references here to the one you have
 # 2. using qt5
-# 3. USE_UPNP=-
 #
 # To compile:
-#   qmake "USE_QRCODE=1" "USE_UPNP=-" "USE_IPV6=1" coin2-qt53-win.pro
-#   mingw32-make -j 2 -f Makefile.Release
+#   qmake "USE_QRCODE=1" "USE_UPNP=1" "USE_IPV6=1" coin2-qt53-win.pro
+#   mingw32-make -f Makefile.Release
 
 
 TEMPLATE = app
@@ -31,7 +30,7 @@ BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
 BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
 OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1l/include
 OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1l
-MINIUPNPC_INCLUDE_PATH=C:/deps/
+MINIUPNPC_INCLUDE_PATH=C:/deps/miniupnpc
 MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
 QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.4
 QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.4/.libs
@@ -87,7 +86,7 @@ contains(USE_UPNP, -) {
     count(USE_UPNP, 0) {
         USE_UPNP=0
     }
-    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB
+    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB MINIUPNP_STATICLIB
     INCLUDEPATH += $$MINIUPNPC_INCLUDE_PATH
     LIBS += $$join(MINIUPNPC_LIB_PATH,,-L,) -lminiupnpc
     win32:LIBS += -liphlpapi

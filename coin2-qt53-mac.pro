@@ -1,3 +1,4 @@
+# /usr/local/Cellar/qt5/5.5.1_2/bin/qmake -o Makefile coin2-qt53-mac.pro
 # to package app into dmg:
 # python2.7 contrib/macdeploy/macdeployqtplus Coin2.1-Qt.app -dmg
 
@@ -12,6 +13,10 @@ QT += core gui network
 # use your SDK here
 QMAKE_MAC_SDK = macosx10.11
 # also manually change -mmacosx-version-min=10.7 to -mmacosx-version-min=10.9 in Makefile later
+
+# fix path to use correct version
+MINIUPNPC_INCLUDE_PATH=/usr/local/Cellar/miniupnpc/1.9.20151008/include/miniupnpc
+MINIUPNPC_LIB_PATH=/usr/local/Cellar/miniupnpc/1.9.20151008/lib
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -47,7 +52,7 @@ contains(USE_UPNP, -) {
     count(USE_UPNP, 0) {
         USE_UPNP=0
     }
-    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB
+    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB MINIUPNP_STATICLIB
     INCLUDEPATH += $$MINIUPNPC_INCLUDE_PATH
     LIBS += $$join(MINIUPNPC_LIB_PATH,,-L,) -lminiupnpc
 }
@@ -319,11 +324,11 @@ isEmpty(BDB_INCLUDE_PATH) {
 }
 
 isEmpty(BOOST_LIB_PATH) {
-    macx:BOOST_LIB_PATH = /usr/local/Cellar/boost/1.58.0/lib/ #/opt/local/lib
+    macx:BOOST_LIB_PATH = /usr/local/Cellar/boost/1.60.0_1/lib/ #/opt/local/lib
 }
 
 isEmpty(BOOST_INCLUDE_PATH) {
-    macx:BOOST_INCLUDE_PATH = /usr/local/Cellar/boost/1.58.0/include/ #/opt/local/include
+    macx:BOOST_INCLUDE_PATH = /usr/local/Cellar/boost/1.60.0_1/include/ #/opt/local/include
 }
 
 isEmpty(OPENSSL_LIB_PATH) {
